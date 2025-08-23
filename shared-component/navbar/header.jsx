@@ -1,30 +1,22 @@
-
 "use client";
 import React, { useState, useEffect } from "react";
-import { FaTimes } from "react-icons/fa";
 import style from "./header.module.scss";
 import LoginForm from "../loginForm";
 import SignupForm from "../signupForm";
-import Link from "next/link";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const [loading, setLoading] = useState(true); // ✅ new state
-
-  const [scrolled, setScrolled] = useState(false);
-
-
-  // ✅ Check localStorage on first load
   useEffect(() => {
     const storedLoginStatus = localStorage.getItem("isLoggedIn");
     if (storedLoginStatus === "true") {
       setIsLoggedIn(true);
     }
-    setLoading(false); // ✅ done checking
+    setLoading(false); 
   }, []);
 
   const handleHamburgerClick = () => setIsOpen((prev) => !prev);
@@ -35,7 +27,6 @@ const Navbar = () => {
     localStorage.removeItem("isLoggedIn");
   };
 
-
   if (loading) {
     return null;
   }
@@ -45,25 +36,19 @@ const Navbar = () => {
       <nav className={style.navbar}>
         <div className={style.navbarLeft}>
           <img src="/logo.png" alt="Logo" className={style.logo} />
+        </div>
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
+        <div className={`${style.navbarLinks} ${isOpen ? style.active : ""}`}>
+          {isOpen && (
+            <div className={style.closeIcon} onClick={handleCloseClick}>
+              ✖
+            </div>
+          )}
 
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-  const handleLinkClick = () => {
-  setIsOpen(false);
-};
-
-
+          <a href="#">Home</a>
+          <a href="#">Destinations</a>
+          <a href="#">Selection</a>
+          <a href="#">About Us</a>
 
           {!isLoggedIn ? (
             <button
@@ -79,44 +64,10 @@ const Navbar = () => {
           )}
         </div>
 
-  return (
-    <>
-      {/* Full width wrapper */}
-      <div className={`${style.main} ${scrolled ? style.scrolled : ""}`}>
-        <nav className={style.navbar}>
-          <div className={style.navbarLeft}>
-            <img src="/logo.png" alt="Logo" className={style.logo} />
-          </div>
-
-          <div className={`${style.navbarLinks} ${isOpen ? style.active : ""}`}>
-            {isOpen && (
-             <div className={style.closeIcon} onClick={handleCloseClick}>
-              <FaTimes color="white" size={30} />
-             </div>
-            )}
-            <Link href="/" onClick={handleLinkClick}>Home</Link>
-            <Link href="/destinations" onClick={handleLinkClick}>Destinations</Link>
-            <Link href="/selection" onClick={handleLinkClick}>Selection</Link>
-            <Link href="/about" onClick={handleLinkClick}>About Us</Link>
-            {!isLoggedIn && (
-              <button
-                onClick={() => {
-                  handleLinkClick();   
-                  setShowLogin(true);  
-                }}
-                className={style.loginBtn}
-              >
-                Log In
-              </button>
-
-
-            )}
-          </div>
-          <div className={style.hamburger} onClick={handleHamburgerClick}>
-            ☰
-          </div>
-        </nav>
-      </div>
+        <div className={style.hamburger} onClick={handleHamburgerClick}>
+          ☰
+        </div>
+      </nav>
 
       {showLogin && (
         <LoginForm
@@ -124,14 +75,10 @@ const Navbar = () => {
           onSwitchToSignup={() => {
             setShowLogin(false);
             setShowSignup(true);
-            
           }}
           onLoginSuccess={() => {
             setIsLoggedIn(true);
-
             localStorage.setItem("isLoggedIn", "true");
-
-
             setShowLogin(false);
           }}
         />
